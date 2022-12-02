@@ -36,6 +36,10 @@ public class OtpServiceImpl implements IOtpService {
 	@Autowired
 	OtpSendToMail otpMail;
 
+	int secKeyValue = LocalDateTime.now().getNano();
+
+	LocalDateTime validationTime = LocalDateTime.now();
+	
 	String otp = null;
 	RequestUserModel reqModel = null;
 	int resendCount = 0;
@@ -73,23 +77,31 @@ public class OtpServiceImpl implements IOtpService {
 
 		validateCount = 0;
 
-		if(generateCount > 3) 
-			throw new OtpException("you exceed the maximum number of attempt.");
+//		if(generateCount > 5) 
+//			throw new OtpException("you exceed the maximum number of attempt.");
 
 		// store user details
 		reqModel = user;
-		String secKey =reqModel.getMobile()+LocalDateTime.now().getNano(); 
+
+		//Secret key
+		String secKey =user.getMobile() +secKeyValue;
 
 		// OTP generate 
-		otp = Util.generateTOTP256(secKey,Integer.valueOf(LocalDateTime.now().getNano()) , "6");
+		otp = Util.generateTOTP256(secKey,secKeyValue , "6");
 
+		if(validationTime.plusSeconds(60).isBefore(LocalDateTime.now())) {
+			secKeyValue++;
+			validationTime = validationTime.plusSeconds(60);
+		}
+		
+		
 		String mobile = "";
 		if(user.getCountryCode() == null) {
 			mobile = "+91".concat(user.getMobile());
 		}
 		else
 			mobile = user.getCountryCode().concat(user.getMobile());
-		
+
 		String message = "Dear customer, use this One Time Password (Number)"
 				+ " to log in to your (Company name) account."
 				+ " This OTP will be valid for the next 1 mins.Your OTP is "+otp;
@@ -100,7 +112,7 @@ public class OtpServiceImpl implements IOtpService {
 		// send email
 		otpMail.sendEmail(user.getEmail(), message);
 
-		CompletableFuture.delayedExecutor(60, TimeUnit.SECONDS).execute(() -> otp = "" );
+
 
 		Optional<OtpModel> existedUser = userRepository.findByEmail(user.getEmail());
 		existedUser.ifPresentOrElse(x -> {
