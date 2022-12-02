@@ -77,9 +77,11 @@ public class OtpServiceImpl implements IOtpService {
 
 		validateCount = 0;
 
-//		if(generateCount > 5) 
-//			throw new OtpException("you exceed the maximum number of attempt.");
+		if(generateCount > 5) {
+			CompletableFuture.delayedExecutor(300, TimeUnit.SECONDS).execute(() -> generateCount = 0 );
 
+			throw new OtpException("you exceed the maximum number of attempt.");
+		}
 		// store user details
 		reqModel = user;
 
@@ -91,7 +93,7 @@ public class OtpServiceImpl implements IOtpService {
 
 		if(validationTime.plusSeconds(60).isBefore(LocalDateTime.now())) {
 			secKeyValue++;
-			validationTime = validationTime.plusSeconds(60);
+			validationTime = LocalDateTime.now().plusSeconds(60);
 		}
 		
 		
