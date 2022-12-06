@@ -1,6 +1,5 @@
 package com.indusnet.model;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,26 +9,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Getter
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-public class OtpModel {
+@ToString
+public class UserModel {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "register_seq")
 	@SequenceGenerator(name = "register_seq", sequenceName = "regis_seq", initialValue = 1001)
-	private Integer id;
-	
-	private String name;
-	private String email;
-	private String mobile;
-	private String countryCode;
-	
-	@Column(unique = true)
-	private String secret;
-	
-		
+	private Integer userId;
+	private Integer loggedIn;
+    
 }

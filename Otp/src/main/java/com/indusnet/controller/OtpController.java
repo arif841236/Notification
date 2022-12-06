@@ -1,29 +1,34 @@
 package com.indusnet.controller;
 
-
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.indusnet.dto.OtpResponseMessage;
-import com.indusnet.dto.RequestUserModel;
+import com.google.gson.Gson;
+import com.indusnet.model.OtpData;
+import com.indusnet.model.ResendRequest;
+import com.indusnet.model.SendOtpRequest;
+import com.indusnet.model.ValidateRequest;
+import com.indusnet.model.common.OtpSendResponse;
+import com.indusnet.model.common.ValidationResponce;
 import com.indusnet.service.IOtpService;
 import com.indusnet.util.ResponeUtil;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/v1.1.2/otp")
+@RequestMapping("api/v0.0.1/otp")
 @RequiredArgsConstructor
 public class OtpController {
 
 	@Autowired
 	private IOtpService userService;
 
+	@Autowired
+	Gson gson;
+	
 	@Autowired
 	ResponeUtil responseUtil;
 
@@ -38,10 +43,13 @@ public class OtpController {
 	 * @return :its return responceEntity of OtpResponseMessage.
 	 */
  
-	@PostMapping("/generate")
-	public ResponseEntity<OtpResponseMessage> generateOtpHandler(@RequestBody @Valid RequestUserModel user){
-		String otp = userService.generateOtp(user);
-		OtpResponseMessage responce = responseUtil.response("OTP generated successfully", otp);
+	@PostMapping("/sendotp")
+	public ResponseEntity<OtpSendResponse> sendOtpHandler(@RequestBody @Valid SendOtpRequest user){
+     System.out.println("requeston is "+user.getRequeston());
+		//SendOtpRequest otpRequest = gson.fromJson(user, SendOtpRequest.class);
+		OtpData otpData = userService.generateOtp(user);
+		
+		OtpSendResponse responce = responseUtil.response("OTP generated successfully", otpData);
 		return ResponseEntity.ok().body(responce);
 	}
 
@@ -54,10 +62,12 @@ public class OtpController {
 	 * @param otp : otp is 6 digit string and its validate the user 
 	 * @return : if otp is match then its return success response if not match then throws exception.
 	 */
-	@GetMapping("/validate/{otp}")
-	public ResponseEntity<OtpResponseMessage> validateOtpHandler(@PathVariable("otp")  String otp){
-		String message = userService.validate(otp);
-		return ResponseEntity.ok().body(responseUtil.response(message, otp));
+	@PostMapping("/validateotp")
+	public ResponseEntity<ValidationResponce> verifyOtpHandler(@RequestBody  String validateReq){
+		ValidateRequest validateRequest = gson.fromJson(validateReq, ValidateRequest.class);
+		
+		ValidationResponce message = userService.validate(validateRequest);
+		return ResponseEntity.ok().body(message);
 	}
 
 	/*
@@ -71,10 +81,12 @@ public class OtpController {
 	 * This Api resend the otp maximum 3 times.
 	 * @return : its return success responce then otp generate succesfully 
 	 */
-	@GetMapping("/resend")
-	public ResponseEntity<OtpResponseMessage> resendOtpHandler(){
-		String otp = userService.resend();
-		OtpResponseMessage responce = responseUtil.response("OTP generated successfully", otp);
+	@PostMapping("/resendotp")
+	public ResponseEntity<OtpSendResponse> resendOtpHandler(@RequestBody String request){
+		ResendRequest resendRequest = gson.fromJson(request, ResendRequest.class);
+		
+		OtpData otpData = userService.resend(resendRequest);
+		OtpSendResponse responce = responseUtil.response("OTP generated successfully", otpData);
 		return ResponseEntity.ok().body(responce);
 	}
  

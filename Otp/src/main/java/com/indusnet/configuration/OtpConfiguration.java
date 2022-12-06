@@ -13,7 +13,7 @@ public class OtpConfiguration implements WebSocketMessageBrokerConfigurer {
 
 	@Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/v1.1.2/otp");
+        config.enableSimpleBroker("api/v0.0.1/otp");
         config.setApplicationDestinationPrefixes("/api");
     }
 

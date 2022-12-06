@@ -1,9 +1,9 @@
 package com.indusnet.util;
 
-import java.time.Instant;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import com.indusnet.dto.OtpResponseMessage;
+import com.indusnet.model.OtpData;
+import com.indusnet.model.common.OtpSendResponse;
 
 /**
  * This is ResponceUtil class 
@@ -19,13 +19,13 @@ public class ResponeUtil {
 	 * @param otp : it is generated otp 
 	 * @return : its return OtpResponseMessage
 	 */
-	public OtpResponseMessage response(String message, String otp) {
-		Long traceId =  Instant.now().toEpochMilli();
-		return OtpResponseMessage.builder().message(message)
-				.otp(otp)
-				.statusCode(HttpStatus.OK.value())
-				.traceId(traceId)
-				.messageTypeId(1)
+	public OtpSendResponse response(String message,OtpData otpData) {
+		return OtpSendResponse.builder().message(message)
+				.messageId(otpData.getMessageId())
+				.status(HttpStatus.OK.value())
+				.otpFor(otpData.getTypeValue())
+				.type(otpData.getType())
+				.validupto(otpData.getValidUpto())
 				.build();
 
 	}

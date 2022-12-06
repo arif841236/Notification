@@ -1,4 +1,4 @@
-package com.indusnet.dto;
+package com.indusnet.model.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

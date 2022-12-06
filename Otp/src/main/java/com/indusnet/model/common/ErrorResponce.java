@@ -1,4 +1,4 @@
-package com.indusnet.dto;
+package com.indusnet.model.common;
 
 import java.sql.Timestamp;
 import lombok.Builder;
@@ -9,15 +9,14 @@ import lombok.Getter;
  */
 @Builder
 @Getter
-public class OtpErrorMessage {
+public class ErrorResponce {
 	
 	private Timestamp timestamp;
-    private Integer statusCode;
+    private Integer status;
     private Integer errorCode;
-    private String message; 
-    private String error;
+    private String errorMessage; 
     private Long traceID;
-    private String trace;
+    private String errorDetails;
     private String path;
-
-}
+    
+  }

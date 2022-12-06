@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
-import com.indusnet.dto.OtpErrorMessage;
+
+import com.indusnet.model.common.ErrorResponce;
 
 /**
  * This class for handle all exception 
@@ -31,22 +32,21 @@ public class GlobalExceptions {
 	 * @return : its return responseEntity of OtpErrorMessage.
 	 */
 	@ExceptionHandler(OtpException.class)
-	public ResponseEntity<OtpErrorMessage> userExceptionHandler(
+	public ResponseEntity<ErrorResponce> userExceptionHandler(
 			OtpException ue,WebRequest wb,Exception e){
 
 		StringWriter stringWriter = new StringWriter();
 		PrintWriter printWriter = new PrintWriter(stringWriter);
 		e.printStackTrace(printWriter);
 		String stackTrace = stringWriter.toString();
-		OtpErrorMessage error =     OtpErrorMessage.builder()
-				.error(HttpStatus.BAD_REQUEST.getReasonPhrase())
+		ErrorResponce error = ErrorResponce.builder()
 				.errorCode(1)
-				.statusCode(HttpStatus.BAD_REQUEST.value())
-				.message(ue.getMessage())
+				.status(HttpStatus.BAD_REQUEST.value())
+			    .errorMessage(HttpStatus.BAD_REQUEST.name())
 				.path(wb.getDescription(false))
 				.timestamp(Timestamp.valueOf(LocalDateTime.now()))
 				.traceID(Instant.now().toEpochMilli())
-				.trace(stackTrace)
+				.errorDetails(stackTrace)
 				.build();
 		return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
 	}
