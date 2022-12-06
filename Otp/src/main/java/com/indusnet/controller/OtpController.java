@@ -46,9 +46,8 @@ public class OtpController {
 	@PostMapping("/sendotp")
 	public ResponseEntity<OtpSendResponse> sendOtpHandler(@RequestBody @Valid SendOtpRequest user){
      System.out.println("requeston is "+user.getRequeston());
-		//SendOtpRequest otpRequest = gson.fromJson(user, SendOtpRequest.class);
 		OtpData otpData = userService.generateOtp(user);
-		
+		System.out.println("after call");
 		OtpSendResponse responce = responseUtil.response("OTP generated successfully", otpData);
 		return ResponseEntity.ok().body(responce);
 	}
