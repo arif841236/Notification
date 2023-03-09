@@ -1,2 +1,2 @@
-# OTP-Generate-and-Send
-OTP generate and send to email and mobile
+# Notification template 
+Create template and save
